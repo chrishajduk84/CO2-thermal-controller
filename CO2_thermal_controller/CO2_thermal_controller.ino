@@ -29,6 +29,10 @@ const uint8_t GND = 49;
 const uint8_t RELAY = 46;
 const uint8_t R_GND = 47;
 
+//Time Keeping
+unsigned long timer;
+unsigned long timerOffset;
+
 //Instantiate the class
 SparkFunMAX31855k probe(CHIP_SELECT_PIN, VCC, GND);
 
@@ -63,6 +67,9 @@ void setup() {
   if (!isnan(temperature)) {
     Serial.print("CJT is (˚C): ");
     Serial.println(temperature);
+
+  //Set start time of the program
+  timerOffset = millis();
   }
 }
 
@@ -83,7 +90,9 @@ void loop() {
   char buff2[4];
   dtostrf(currentTemp,3,1,buff2);
   String textTemp2 = String(buff2);
-  Serial.println("Setpoint Temperature: " + textTemp1 + "C, Current Temperature: "  + textTemp2 + "C" );
+  timer = millis() - timerOffset;
+  String textTemp3 = String(timer);
+  Serial.println("T: " + textTemp3 + "ms, Setpoint Temperature: " + textTemp1 + "C, Current Temperature: "  + textTemp2 + "C" );
 
   bool output = bbController(setpointTemp, 25, tolerance);
   digitalWrite(RELAY, output==true?HIGH:LOW);
